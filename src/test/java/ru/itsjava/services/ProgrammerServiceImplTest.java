@@ -1,0 +1,54 @@
+package ru.itsjava.services;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import ru.itsjava.domain.NoteBook;
+
+import static org.mockito.Mockito.when;
+
+@SpringBootTest
+@DisplayName("Класс ProgrammerService")
+public class ProgrammerServiceImplTest {
+
+    @Configuration
+    static class MyConfiguration{
+
+        @Bean
+        public IOService ioService(){
+            IOServiceImpl mockIOService = Mockito.mock(IOServiceImpl.class);
+
+            when(mockIOService.input()).thenReturn("vitaliy");
+
+            return mockIOService;
+//            return new IOServiceImpl();
+        }
+
+        @Bean
+        public NoteBookService noteBookService(){
+            NoteBookServiceImpl noteNoteBookService = Mockito.mock(NoteBookServiceImpl.class);
+            when(noteNoteBookService.getNoteBook()).thenReturn(new NoteBook("Asus", "G115AF", 2010));
+
+            return noteNoteBookService;
+        }
+
+        @Bean
+        public ProgrammerService programmerService(NoteBookService noteBookService, IOService ioService){
+            return new ProgrammerServiceImpl(noteBookService, ioService);
+        }
+    }
+
+    @Autowired
+    private ProgrammerService programmerService;
+
+    @DisplayName(" корректный метод Привет-программист")
+    @Test
+    public void shouldHaveCorrectMethodHiToNewProgrammer(){
+
+        programmerService.hiToNewProgrammer();
+    }
+}
