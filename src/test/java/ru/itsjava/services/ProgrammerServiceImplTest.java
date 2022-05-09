@@ -9,6 +9,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import ru.itsjava.domain.NoteBook;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -16,10 +20,10 @@ import static org.mockito.Mockito.when;
 public class ProgrammerServiceImplTest {
 
     @Configuration
-    static class MyConfiguration{
+    static class MyConfiguration {
 
         @Bean
-        public IOService ioService(){
+        public IOService ioService() {
             IOServiceImpl mockIOService = Mockito.mock(IOServiceImpl.class);
 
             when(mockIOService.input()).thenReturn("vitaliy");
@@ -29,7 +33,7 @@ public class ProgrammerServiceImplTest {
         }
 
         @Bean
-        public NoteBookService noteBookService(){
+        public NoteBookService noteBookService() {
             NoteBookServiceImpl noteNoteBookService = Mockito.mock(NoteBookServiceImpl.class);
             when(noteNoteBookService.getNoteBook()).thenReturn(new NoteBook("Asus", "G115AF", 2010));
 
@@ -37,7 +41,7 @@ public class ProgrammerServiceImplTest {
         }
 
         @Bean
-        public ProgrammerService programmerService(NoteBookService noteBookService, IOService ioService){
+        public ProgrammerService programmerService(NoteBookService noteBookService, IOService ioService) {
             return new ProgrammerServiceImpl(noteBookService, ioService);
         }
     }
@@ -47,8 +51,13 @@ public class ProgrammerServiceImplTest {
 
     @DisplayName(" корректный метод Привет-программист")
     @Test
-    public void shouldHaveCorrectMethodHiToNewProgrammer(){
-
+    public void shouldHaveCorrectMethodHiToNewProgrammer() {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(out));
         programmerService.hiToNewProgrammer();
+
+        assertEquals("Enter your name: \n"+
+                "Hello vitaliy\n" +
+                "Your computer: Notebook{Asus G115AF 2010}\n", out.toString());
     }
 }
